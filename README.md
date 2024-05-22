@@ -1,7 +1,7 @@
 # ADDC-AddUsers1
 ADDC addusers
 
-Certainly! Below is a PowerShell script to create multiple users in Active Directory Domain Controller:
+Below is a PowerShell script to create multiple users in Active Directory Domain Controller:
 
 ```powershell
 # Define Active Directory domain details
