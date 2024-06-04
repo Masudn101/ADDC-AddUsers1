@@ -1,42 +1,36 @@
-# Define Active Directory domain details
-$DomainName = "abc.com"
-$OU = "OU=Users,DC=abc,DC=com"
 
-# Define user details
-$UserDetails = @(
-    @{
-        UserName = "User1"
-        Password = "Password1"
-        FirstName = "User"
-        LastName = "One"
-        Description = "Test User One"
-    },
-    @{
-        UserName = "User2"
-        Password = "Password2"
-        FirstName = "User"
-        LastName = "Two"
-        Description = "Test User Two"
-    },
-    @{
-        UserName = "User3"
-        Password = "Password3"
-        FirstName = "User"
-        LastName = "Three"
-        Description = "Test User Three"
-    }
-)
+User Group
+----------------------
 
-# Import Active Directory module
-Import-Module ActiveDirectory
+# Create Domain Users
+New-ADUser -Name "User1" -GivenName "User" -Surname "One" -SamAccountName "User1" -UserPrincipalName "User1@abc.com" -AccountPassword (ConvertTo-SecureString "Asdf1234" -AsPlainText -Force) -Enabled $true
 
-# Create users
-foreach ($UserDetail in $UserDetails) {
-    $FullName = $UserDetail.FirstName + " " + $UserDetail.LastName
-    $UserPrincipal = $UserDetail.UserName + "@" + $DomainName
-    
-    New-ADUser -Name $FullName -SamAccountName $UserDetail.UserName -UserPrincipalName $UserPrincipal -AccountPassword (ConvertTo-SecureString $UserDetail.Password -AsPlainText -Force) -Enabled $true -Description $UserDetail.Description -Path $OU
-}
+New-ADUser -Name "User2" -GivenName "User" -Surname "Two" -SamAccountName "User2" -UserPrincipalName "User2@abc.com" -AccountPassword (ConvertTo-SecureString "Asdf1234" -AsPlainText -Force) -Enabled $true
 
-# Display confirmation message
-Write-Host "Users created successfully."
+New-ADUser -Name "User3" -GivenName "User" -Surname "Three" -SamAccountName "User3" -UserPrincipalName "User3@abc.com" -AccountPassword (ConvertTo-SecureString "Asdf1234" -AsPlainText -Force) -Enabled $true
+
+# Create Domain Groups
+New-ADGroup -Name "Group1" -GroupScope Global
+New-ADGroup -Name "Group2" -GroupScope Global
+
+# Add Users to Groups
+Add-ADGroupMember -Identity "Group1" -Members "User1", "User2"
+Add-ADGroupMember -Identity "Group2" -Members "User2", "User3"
+
+# Check if User1 exists
+Get-ADUser -Identity User1
+Get-ADUser -Identity User2
+Get-ADUser -Identity User3
+
+# Check if Group1 exists
+Get-ADGroup -Identity Group1
+Get-ADGroup -Identity Group2
+
+# Check members of Group1,Group2
+Get-ADGroupMember -Identity Group1
+Get-ADGroupMember -Identity Group2
+
+# Check groups for User1,User2,User3
+Get-ADUser -Identity User1 -Properties MemberOf | Select-Object -ExpandProperty MemberOf
+Get-ADUser -Identity User2 -Properties MemberOf | Select-Object -ExpandProperty MemberOf
+Get-ADUser -Identity User3 -Properties MemberOf | Select-Object -ExpandProperty MemberOf
